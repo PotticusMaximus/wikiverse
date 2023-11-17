@@ -8,6 +8,7 @@ export const App = () => {
   const [pages, setPages] = useState([]);
   const [article, setArticle] = useState("");
   const [addingArticle, setAddingArticle] = useState(false);
+  const [mySlug, setMySlug] = useState("");
 
   const [formData, setFormData] = useState({
     title: "",
@@ -29,12 +30,13 @@ export const App = () => {
 
   useEffect(() => {
     fetchPages();
-  }, []);
+  }, [handleSubmit]);
 
   const getArticle = async (slug) => {
     const response = await fetch(`${apiURL}/wiki/${slug}`);
     const data = await response.json();
     setArticle(data.content);
+    setMySlug(slug);
   };
 
   function handleChange(e) {
@@ -74,6 +76,25 @@ export const App = () => {
     }
   }
 
+  const handleDelete = async () => {
+    try {
+      const response = await fetch(`${apiURL}/wiki/${mySlug}`, {
+        method: "DELETE",
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      console.log("Success deleting: ", data);
+      setMySlug("");
+      setArticle("");
+    } catch (error) {
+      console.error("Submission error:", error.message);
+    }
+  };
+
   return (
     <main>
       <h1>Brickipedia</h1>
@@ -90,6 +111,7 @@ export const App = () => {
         <>
           <p>{article}</p>
           <button onClick={() => setArticle("")}>Back to Brickpedia</button>
+          <button onClick={handleDelete}>Delete article</button>
         </>
       )}
       {addingArticle === true && (
