@@ -9,6 +9,7 @@ export const App = () => {
   const [article, setArticle] = useState("");
   const [addingArticle, setAddingArticle] = useState(false);
   const [mySlug, setMySlug] = useState("");
+  const [dataChanged, setDataChanged] = useState(false);
 
   const [formData, setFormData] = useState({
     title: "",
@@ -30,7 +31,8 @@ export const App = () => {
 
   useEffect(() => {
     fetchPages();
-  }, [handleSubmit]);
+    setDataChanged(false);
+  }, [dataChanged === true]);
 
   const getArticle = async (slug) => {
     const response = await fetch(`${apiURL}/wiki/${slug}`);
@@ -71,6 +73,7 @@ export const App = () => {
       });
 
       setAddingArticle(false);
+      setDataChanged(true);
     } catch (error) {
       console.error("Submission error:", error.message);
     }
@@ -90,6 +93,7 @@ export const App = () => {
       console.log("Success deleting: ", data);
       setMySlug("");
       setArticle("");
+      setDataChanged(true);
     } catch (error) {
       console.error("Submission error:", error.message);
     }
