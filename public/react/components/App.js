@@ -37,7 +37,14 @@ export const App = () => {
   const getArticle = async (slug) => {
     const response = await fetch(`${apiURL}/wiki/${slug}`);
     const data = await response.json();
-    setArticle(data.content);
+    setArticle([
+      <h2 key="title">Title: {data.title}</h2>,
+      <h2 key="author">Author: {data.author.name}</h2>,
+      <p key="content">{data.content}</p>,
+      <p key="tags">Tags: {data.tags.map((tag) => tag.name).join(" ")}</p>,
+      <p key="created">Created: {data.createdAt}</p>,
+    ]);
+    //console.log(data);
     setMySlug(slug);
   };
 
@@ -113,7 +120,9 @@ export const App = () => {
       )}
       {article !== "" && addingArticle === false && (
         <>
-          <p>{article}</p>
+          {article.map((element, index) => (
+            <div key={index}>{element}</div>
+          ))}
           <button onClick={() => setArticle("")}>Back to Brickpedia</button>
           <button onClick={handleDelete}>Delete article</button>
         </>
