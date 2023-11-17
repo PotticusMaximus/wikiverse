@@ -9,9 +9,13 @@ export const App = () => {
   const [article, setArticle] = useState("");
   const [addingArticle, setAddingArticle] = useState(false);
 
-  const [formData, setFormData] = useState([
-    { title: "", content: "", name: "", email: "", tags: "" },
-  ]);
+  const [formData, setFormData] = useState({
+    title: "",
+    content: "",
+    name: "",
+    email: "",
+    tags: "",
+  });
 
   async function fetchPages() {
     try {
@@ -34,27 +38,40 @@ export const App = () => {
   };
 
   function handleChange(e) {
-    e.preventDefault;
-    setFormData(e.target.value);
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   }
 
   async function handleSubmit(e) {
-    e.preventDefault;
-    const response = await fetch(`${apiURL}/wiki/`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        title: formData.title,
-        content: formData.content,
-        name: formData.name,
-        email: formData.email,
-        tags: formData.tags,
-      }),
-    });
-    const data = await response.json();
-    //finish setting form data and resetting etc
+    e.preventDefault();
+
+    try {
+      const response = await fetch(`${apiURL}/wiki`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      console.log("Success submitting: ", data);
+
+      setFormData({
+        title: "",
+        content: "",
+        name: "",
+        email: "",
+        tags: "",
+      });
+
+      setAddingArticle(false);
+    } catch (error) {
+      console.error("Submission error:", error.message);
+    }
   }
 
   return (
@@ -77,8 +94,7 @@ export const App = () => {
       )}
       {addingArticle === true && (
         <>
-          <form //</>onSubmit={handleSubmit}
-          >
+          <form onSubmit={handleSubmit}>
             <label>
               Title:
               <input
@@ -102,7 +118,7 @@ export const App = () => {
               Author Name:
               <input
                 type="text"
-                name="authorName"
+                name="name"
                 value={formData.name}
                 onChange={handleChange}
               />
@@ -112,7 +128,7 @@ export const App = () => {
               Author Email:
               <input
                 type="email"
-                name="authorEmail"
+                name="email"
                 value={formData.email}
                 onChange={handleChange}
               />
