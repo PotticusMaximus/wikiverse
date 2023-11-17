@@ -8,3 +8,8 @@ main {
   padding: 1rem;
   height: 100vh;
 }
+
+button {
+  margin: auto;
+  border: solid;
+}
